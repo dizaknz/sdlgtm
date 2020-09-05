@@ -28,7 +28,7 @@ error() {
 }
 
 main() {
-    while getops 'ha:n:p:s:' c; do
+    while getopts 'ha:n:p:s:' c; do
         case $c in
             h) usage && exit 0 ;;
             a) sdk=$OPTARG ;;
@@ -43,13 +43,15 @@ main() {
         exit 1
     }
 
+    [ -d $BIN/Android ] || mkdir -p $BIN/Android
     info "Generating Android project"
     (
-        cd $sdl
+        cd $sdl/build-scripts
         ANDROID_HOME=$sdk ANDROID_NDK_HOME=$ndk ./androidbuild.sh $package $BIN/lgtm.c || {
             error "Failed to generate Android project"
             exit 1
         }
+        mv $sdl/build/$package $BIN/Android/lgtm
     )
 }
 
